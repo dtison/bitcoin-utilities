@@ -1,12 +1,12 @@
 # Bitcoin Utilities — WIF Import and Descriptor Backup
 
-This repository contains small Bash utilities for working with **Bitcoin Core descriptor wallets**, with particular emphasis on an older but important use case:
+This repository contains small Bash utilities for **Bitcoin Core descriptor wallets**, with emphasis on one important use case:
 
-> **You have a collection of private keys in WIF format from an old `dumpprivkey` backup, but your current Bitcoin Core no longer provides `importprivkey`.**
+> **You have one or more private keys in WIF format from an old `dumpprivkey` backup, but your current Bitcoin Core no longer provides `importprivkey`.**
 
 The utilities provide a practical bridge between the old **"one WIF = one saved private key"** workflow and the modern **descriptor-wallet** model.
 
-They are deliberately small shell scripts around `bitcoin-cli`, `jq`, and standard Unix tools. They do not introduce a Bitcoin library or an external service into the key-handling path.
+They are small shell scripts around `bitcoin-cli`, `jq`, and standard Unix / Linux tools. For security, they do not introduce a Bitcoin library or any external service into the key-handling path. All the commands issued by the scripts could also in theory be run manually on the CLI.
 
 ---
 
@@ -41,19 +41,19 @@ Bitcoin Core's wallet architecture has since moved to **descriptor wallets**. In
 
 See the [Bitcoin Core 30.0 release notes](https://bitcoincore.org/en/releases/30.0/).
 
-This is an important distinction:
+But, there is an important distinction:
 
-**The private key itself did not become obsolete. The old RPC interface for putting an individual WIF into a wallet did.**
+**The private key itself did not become obsolete. Only the old RPC interface for putting an individual WIF into a wallet did.**
 
 The modern replacement is `importdescriptors`.
 
-Bitcoin Core's descriptor wallet can absolutely hold the private key and use it to spend. What changed is the representation used by the wallet.
+Bitcoin Core's descriptor wallet can still hold the private key and use it to spend. What changed is the representation used by the wallet.
 
 ---
 
 # What this utility does
 
-`import-wallet.sh` accepts wallet material, including a file containing WIF private keys, and converts each WIF into a descriptor request suitable for a modern descriptor wallet.
+`import-wallet.sh` accepts wallet private keys, exported previously using dumpprivkey. It supports an input file containing WIF private keys, and converts each WIF into a descriptor request suitable for a modern descriptor wallet. It also supports importing a list of Descriptors from listdescriptors true.
 
 For each WIF:
 
@@ -90,15 +90,15 @@ importdescriptors
 descriptor wallet
 ```
 
-The WIF is still the private key. The descriptor is the wallet's description of how that key can be used to recognize and spend Bitcoin outputs.
+The WIF remains the private key. The descriptor is the wallet's description of how that key can be used to recognize and spend Bitcoin outputs.
 
-The descriptor is not a new private key and does not replace the WIF cryptographically. It is a wallet/script representation built around the key.
+Note that the descriptor is not a new private key and does not replace the WIF cryptographically. It is an update wallet/script representation built around the key.
 
 ---
 
-# Why `combo()` is used
+# Historical Note and Why `combo()` is used
 
-The importer uses:
+In order to support most WIF's the importer uses:
 
 ```text
 combo(<WIF>)
@@ -189,7 +189,7 @@ The `.gitignore` included with this repository already ignores:
 keys.txt
 ```
 
-That is intentional. A file containing WIFs should never accidentally be committed to Git.
+That is intentional. Using the input filename keys.txt is recommended but is not required.
 
 ---
 
@@ -235,7 +235,7 @@ Bitcoin Core rescans the blockchain according to the timestamps supplied with th
 
 ---
 
-# Timestamp / rescan behavior
+# Timestamp Rescan Support
 
 By default, the script uses:
 
@@ -249,7 +249,7 @@ This is the safest default when the age of the key or its first use is unknown.
 
 For an old key that could have received coins many years ago, do **not** arbitrarily choose a recent timestamp merely to make the rescan faster. Doing so could cause earlier transactions to be missed.
 
-If you know that the key could not have been used before a particular block height, the script supports:
+To make the scan faster, if you know that the key could not have been used before a particular block height, the script supports:
 
 ```bash
 -t <block-height>
