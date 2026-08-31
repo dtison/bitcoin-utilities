@@ -1,5 +1,13 @@
 # Bitcoin Utilities — Private Key Import for Descriptor Wallets - Descriptors Exports
 
+## ⚠️ Warning
+
+Every effort has been made to ensure that this tool is safe to use. Nevertheless, using software that handles Bitcoin private keys inherently involves risk.
+
+**Read and thoroughly review the Security section before using this tool, and do not proceed unless you are 100% confident that you understand what you are doing.** This tool is not intended for casual or careless use. You are solely responsible for your actions and for the security of your Bitcoin. **There is no warranty.** Please read `doc/LICENSE.md` in its entirety.
+
+A single careless mistake can result in the permanent loss of your Bitcoin. **Review the source code thoroughly and verify your environment before using this software.**
+
 This README is a summary. 
 
 If you want additional technical details, see [See How it Works](doc/HOW_WORKS.md).
