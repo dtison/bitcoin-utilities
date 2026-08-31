@@ -1,4 +1,3 @@
-
 # Historical Note and Why `combo()` is used
 
 In order to support most WIF's the importer uses:
@@ -135,3 +134,44 @@ with a request array resembling:
 ```
 
 Bitcoin Core rescans the blockchain according to the timestamps supplied with the descriptors.
+
+# Bitcoin Core RPC timeout
+
+The importer deliberately invokes:
+
+```text
+-rpcclienttimeout=0
+```
+
+for the `importdescriptors` call.
+
+This matters because a historical rescan can take a long time. The import itself may continue successfully even when a normal RPC client timeout expires.
+
+Setting the CLI's RPC client timeout to zero prevents the command-line client from giving up while Bitcoin Core is still performing the import.
+
+---
+
+# Important conceptual point
+
+The disappearance of `importprivkey` does **not** mean that old WIF backups have become incompatible with Bitcoin.
+
+It means that the old wallet interface for representing those keys has disappeared.
+
+The underlying relationship remains:
+
+```text
+WIF
+  ↓
+private key
+  ↓
+public key
+  ↓
+script / address representation
+  ↓
+descriptor
+```
+
+The descriptor is simply the modern wallet-language representation of that relationship.
+
+This utility bridges the gap so that a person who preserved the **actual cryptographic primitive** — the private key — does not have to resurrect an obsolete wallet implementation merely to make that key usable again.
+---
