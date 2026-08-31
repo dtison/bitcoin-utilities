@@ -1,5 +1,8 @@
 # Bitcoin Utilities — Private Key Import for Descriptor Wallets - Descriptors Exports
 
+This README is a summary. If you want additional technical details, see [See the details](ADDITIONAL_DETAILS.md)
+
+
 This repository contains small Bash utilities for **Bitcoin Core descriptor wallets**, with emphasis on one important use case:
 
 > **You have one or more private keys in WIF format from an old `dumpprivkey` backup, but the current version of Bitcoin Core no longer provides `importprivkey`.**
