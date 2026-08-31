@@ -1,8 +1,9 @@
 # Bitcoin Utilities — Private Key Import for Descriptor Wallets - Descriptors Exports
 
 This README is a summary. 
-If you want additional technical details, see [See How it Works](doc/HOW_WORKS.md)
-For a deeper-dive into what problem this solves, see [Import Gap Details](doc/IMPORT_GAP_DETAILS.md)
+
+If you want additional technical details, see [See How it Works](doc/HOW_WORKS.md).
+For a deeper-dive into the problem being solved, see [Import Gap Details](doc/IMPORT_GAP_DETAILS.md).
 
 
 This repository contains small Bash utilities for **Bitcoin Core descriptor wallets**, with emphasis on one important use case:
@@ -17,7 +18,7 @@ They are small shell scripts around `bitcoin-cli`, `jq`, and standard Unix / Lin
 
 ---
 
-## The problem this solves
+## The Problem
 
 For many years, a Bitcoin Core user could do something conceptually simple:
 
@@ -50,11 +51,9 @@ See the [Bitcoin Core 30.0 release notes](https://bitcoincore.org/en/releases/30
 
 But, there is an important distinction:
 
-**The private key itself did not become obsolete. Only the old RPC interface for putting an individual WIF into a wallet did.**
+**The private key itself has not become obsolete, but the RPC and Console interface for importing a WIF into a wallet did.**
 
-The modern replacement is `importdescriptors`.
-
-Bitcoin Core's descriptor wallet can still hold the private key and use it to spend. What changed is the representation used by the wallet.
+The modern replacement is `importdescriptors` which is incompatible with legacy Private Keys.
 
 ---
 
@@ -99,11 +98,11 @@ descriptor wallet
 
 The WIF remains the private key. The descriptor is the wallet's description of how that key can be used to recognize and spend Bitcoin outputs.
 
-Note that the descriptor is not a new private key and does not replace the WIF cryptographically. It is an update wallet/script representation built around the key.
+Note that the descriptor does not replace private key. It is an update wallet/script representation built around the key.
 
 ---
 
-# Timestamp Rescan Support
+# Timestamps and Rescans
 
 By default, the script uses:
 
@@ -115,9 +114,7 @@ which means "from the beginning of the blockchain."
 
 This is the safest default when the age of the key or its first use is unknown.
 
-For an old key that could have received coins many years ago, do **not** arbitrarily choose a recent timestamp merely to make the rescan faster. Doing so could cause earlier transactions to be missed.
-
-To make the scan faster, if you know that the key could not have been used before a particular block height, the script supports:
+To make the scan faster, if you know that the key was not used before a particular block height, the script will save time by using:
 
 ```bash
 -t <block-height>
@@ -151,7 +148,7 @@ See the [Bitcoin Core `importdescriptors` documentation](https://bitcoincore.org
 
 ---
 
-# Basic setup
+# Basic Setup
 
 The repository expects a local configuration file:
 
@@ -179,6 +176,8 @@ bitcoin-cli
 ```
 
 The configuration file is ignored by Git.
+
+You can also specify PASSPHRASE and BITCOIN_PATH on the command line. Use -p <path> and -P <passphrase}
 
 **Do not put this configuration file into a public repository.**
 
@@ -225,35 +224,7 @@ The wallet is created if necessary.
 
 If the wallet already exists, the script attempts to import into that wallet.
 
-
-
----
-
-# Verifying an imported key
-
-A useful independent check is to ask Bitcoin Core to derive an address from the descriptor.
-
-For example, the underlying descriptor can be analyzed with:
-
-```bash
-bitcoin-cli getdescriptorinfo 'pkh(<WIF>)'
-```
-
-or:
-
-```bash
-bitcoin-cli getdescriptorinfo 'combo(<WIF>)'
-```
-
-and addresses can be derived using `deriveaddresses` where appropriate.
-
-The important principle is:
-
-> **Do not substitute a derived address, public key, or descriptor checksum for the private key when making the original private-key backup.**
-
-The WIF is the private key material.
-
-The descriptor is a reusable wallet representation of that key.
+If the -f keys.txt parameter is omitted, it will default to "keys.txt".
 
 ---
 
@@ -379,14 +350,22 @@ That distinction is important when moving a descriptor backup between wallets or
 
 This software handles **private keys**.
 
-Use it accordingly.
+One wrong move and you could lose all your Bitcoin.
+
+**Think twice before you act.**
+
+Consider using an encrypted device or volume.
+
+Do not use where any cameras are present.
+
+Do not use where others can see your display.
 
 ## Do not
 
 - Put WIF files into Git.
 - Commit `.bitcoin-utilities.sh`.
 - Paste WIFs into web sites.
-- Upload WIFs to online services.
+- Upload WIFs to any Storage or Cloud services.
 - Send descriptor exports containing private keys to other people.
 - Leave WIFs or private descriptors in shell history unnecessarily.
 - Run the scripts on a machine you do not trust.
@@ -524,8 +503,6 @@ For an old WIF backup, the recommended workflow is:
 After the wallet has been successfully restored and verified, maintain at least one independent offline backup of the private-key material.
 
 Do not rely on the wallet's live database as the only copy.
-
-
 
 ---
 
