@@ -14,7 +14,7 @@ source "${CONFIG_FILE}"
 CheckArguments $1
 
 # Set default values
-FILENAME=""
+FILENAME="keys.txt"
 CONTENTS=""
 WALLET=$(openssl rand -hex 4)
 REQUEST=""
