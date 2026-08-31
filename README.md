@@ -1,6 +1,6 @@
 # Bitcoin Utilities — Private Key Import for Descriptor Wallets - Descriptors Exports
 
-This README is a summary. If you want additional technical details, see [See the details](ADDITIONAL_DETAILS.md)
+This README is a summary. If you want additional technical details, see [See additional details](ADDITIONAL_DETAILS.md)
 
 
 This repository contains small Bash utilities for **Bitcoin Core descriptor wallets**, with emphasis on one important use case:
@@ -223,37 +223,7 @@ The wallet is created if necessary.
 
 If the wallet already exists, the script attempts to import into that wallet.
 
----
 
-# A note about wallet creation
-
-The current Bitcoin Core architecture requires descriptor wallets.
-
-The script therefore creates the wallet using the descriptor-wallet mode rather than attempting to create a legacy BDB wallet.
-
-Conceptually, this replaces the old workflow:
-
-```text
-create legacy wallet
-        ↓
-importprivkey
-        ↓
-wallet.dat
-```
-
-with:
-
-```text
-create descriptor wallet
-        ↓
-WIF → descriptor
-        ↓
-importdescriptors
-        ↓
-descriptor wallet
-```
-
-This is why an old WIF backup remains usable even though the old `importprivkey` RPC is gone.
 
 ---
 
@@ -402,77 +372,6 @@ That distinction is important when moving a descriptor backup between wallets or
 
 ---
 
-# Why this is different from the old `dumpprivkey` workflow
-
-The old workflow was pleasantly simple:
-
-```text
-address
-   ↓
-dumpprivkey
-   ↓
-WIF
-   ↓
-store WIF
-   ↓
-importprivkey
-```
-
-The modern descriptor-wallet workflow is more explicit:
-
-```text
-WIF
-   ↓
-descriptor construction
-   ↓
-checksum
-   ↓
-importdescriptors
-   ↓
-descriptor wallet
-```
-
-The additional representation is not required by Bitcoin's cryptography. It is required by the wallet architecture.
-
-This utility exists to make that architectural change transparent to someone who already has the old kind of backup.
-
----
-
-# The "Rip Van Winkle" use case
-
-This repository is particularly useful for the person who did exactly what Bitcoin Core once encouraged users to do:
-
-1. Receive Bitcoin.
-2. Obtain a private key with `dumpprivkey`.
-3. Print or otherwise securely store the WIF.
-4. Put the wallet away.
-5. Come back many years later.
-
-If that person returns to a current Bitcoin Core installation, the old:
-
-```text
-importprivkey
-```
-
-command is no longer available because the legacy wallet system has been removed.
-
-The conventional migration answer is to install an older Bitcoin Core release, create/load a legacy wallet, import the keys there, migrate the wallet to descriptors, and then upgrade.
-
-That works, but it introduces an unnecessary version detour for someone whose actual requirement is simply:
-
-> **"I have my private keys. Put them into a modern wallet."**
-
-This utility takes the shorter path:
-
-```text
-old WIF backup
-      ↓
-modern descriptor wallet
-```
-
-No legacy wallet is required.
-
----
 
 # Security considerations
 
@@ -496,11 +395,10 @@ A WIF is private-key material.
 
 A descriptor containing the private key is also private-key material.
 
-A checksum is not private.
+A checksum is safe; is not private.
 
 A public-only descriptor is not private-key material.
 
-The distinction matters when deciding what can safely be copied to an ordinary backup location.
 
 ---
 
@@ -524,7 +422,7 @@ Also note that the current debug/display code can print the configured passphras
 
 # What this utility does not do
 
-This project is intentionally narrow.
+For securiyt, this project is intentionally narrow.
 
 It does **not**:
 
