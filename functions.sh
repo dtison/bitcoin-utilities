@@ -58,7 +58,7 @@ CheckImportParameters() {
 
 	if [ -z $WALLET ]
 	then
-		echo " Error: Wallet name is required for import."
+		echo " Error: Wallet name is required for import. Use -w <wallet>"
 		exit 1
 	fi 
 	if [ -z $FILENAME ]

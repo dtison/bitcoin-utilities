@@ -701,7 +701,6 @@ The scripts assume a Unix-like environment with:
 - Bitcoin Core with descriptor-wallet support
 - `bitcoin-cli`
 - `jq`
-- `openssl`
 - standard Unix utilities
 
 The repository was developed/tested around Bitcoin Core 31.x.
