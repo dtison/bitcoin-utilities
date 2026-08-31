@@ -258,3 +258,31 @@ No legacy wallet is required.
 
 ---
 
+
+# Verifying an imported key
+
+A useful independent check is to ask Bitcoin Core to derive an address from the descriptor.
+
+For example, the underlying descriptor can be analyzed with:
+
+```bash
+bitcoin-cli getdescriptorinfo 'pkh(<WIF>)'
+```
+
+or:
+
+```bash
+bitcoin-cli getdescriptorinfo 'combo(<WIF>)'
+```
+
+and addresses can be derived using `deriveaddresses` where appropriate.
+
+The important principle is:
+
+> **Do not substitute a derived address, public key, or descriptor checksum for the private key when making the original private-key backup.**
+
+The WIF is the private key material.
+
+The descriptor is a reusable wallet representation of that key.
+
+---
