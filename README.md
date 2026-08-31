@@ -1,6 +1,8 @@
 # Bitcoin Utilities — Private Key Import for Descriptor Wallets - Descriptors Exports
 
-This README is a summary. If you want additional technical details, see [See additional details](ADDITIONAL_DETAILS.md)
+This README is a summary. 
+If you want additional technical details, see [See How it Works](doc/HOW_WORKS.md)
+For a deeper-dive into what problem this solves, see [Import Gap Details](doc/IMPORT_GAP_DETAILS.md)
 
 
 This repository contains small Bash utilities for **Bitcoin Core descriptor wallets**, with emphasis on one important use case:
