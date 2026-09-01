@@ -1,5 +1,4 @@
-
-# A Closer Look at What this Utility does
+# A Closer Look at What this Utility does and How it works
 
 `import-wallet.sh` accepts wallet private keys, exported previously using dumpprivkey. It supports an input file containing WIF private keys, and converts each WIF into a descriptor request suitable for a modern descriptor wallet. It also supports importing a list of Descriptors from listdescriptors true.
 
