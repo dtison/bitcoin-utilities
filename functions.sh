@@ -82,3 +82,11 @@ DisplayValues() {
 	echo "Block Height [${BLOCK_HEIGHT}]"
 	echo "Timestamp [${TIMESTAMP}]"
 }
+
+CheckRPC() {
+	# Support rpc via rpc.conf if file exists
+	if [ -f rpc.conf ]
+	then
+    	CONF="-conf=$(pwd)/rpc.conf"
+	fi
+}

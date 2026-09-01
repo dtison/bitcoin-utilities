@@ -14,16 +14,10 @@ CheckArguments $1
 
 # Set default values
 DEBUG=0
+CONF=""
 USAGE_STRING="[-w] wallet [-p] Bitcoin path [-P] passphrase  [-h] help"
 HandleArguments "$@"
-
-# Support rpc via rpc.conf if file exists
-if [ -f rpc.conf ]
-then
-	CONF="-conf=$(pwd)/rpc.conf"
-else
-	CONF=""
-fi
+CheckRPC
 
 ## Check if wallet is loaded, and load if not
 if ! ${BITCOIN_PATH}/bitcoin-cli ${CONF} listwallets\
