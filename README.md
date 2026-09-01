@@ -28,28 +28,21 @@ They are small shell scripts around `bitcoin-cli`, `jq`, and standard Unix / Lin
 
 ## Platform Support
 
-`bitcoin-utilities` directly supports **macOS and Linux**. The scripts are written in Bash and use standard Unix utilities together with the Bitcoin Core command-line tools, so no separate runtime or application framework is required.
+`bitcoin-utilities` was developed on Linux. It should also support **macOS**. The scripts are written in Bash and use standard Unix utilities together with the Bitcoin Core command-line tools, so apart from jq, no separate runtime or application framework is required. Mac Users can use Homebrew or Mac Ports to install jq.
 
 **Windows users can use WSL 2 (Windows Subsystem for Linux)** to provide a Linux environment in which to run the tools. WSL 2 allows the scripts to be used without requiring the utilities to be rewritten specifically for Windows PowerShell or Command Prompt.
 
 The Bitcoin Core installation and `bitcoin-cli` executable must, of course, be available within the environment where the scripts are being run. See the installation and configuration instructions below for platform-specific details.
 
 ---
-### Windows / WSL 2 Testing
+### Windows / WSL 2 and MacOS Testing
 
-**macOS and Linux are covered. Windows testing is still needed.**
+**macOS and Windows testing is still needed.**
 
-If you are an experienced Windows and/or WSL 2 user and can help test `bitcoin-utilities` with Bitcoin Core running on Windows, we'd appreciate your help. In particular, we need to verify the simplest and most secure way for the WSL 2 environment to communicate with Bitcoin Core's RPC interface.
+If you are an experienced MacOS or Windows user and can help test `bitcoin-utilities` with Bitcoin Core, we'd appreciate your help. 
 
-If you can help, please **open an issue on GitHub** with your setup, what you tested, and your results. Your findings can help us document a straightforward procedure for other Windows users.
+If you can help, please **open an issue on GitHub** with your setup, what you tested, and your results. Your findings can help us document straightforward procedures for Mac and Windows users.
 
-### Windows / WSL 2 Testing
-
-**MacOS and Linux are covered. Windows testing is still needed.**
-
-If you are an experienced Windows and/or WSL 2 user and can help test `bitcoin-utilities` with Bitcoin Core running on Windows, we'd appreciate your help. In particular, we need to verify the simplest and most secure way for the WSL 2 environment to communicate with Bitcoin Core's RPC interface.
-
-If you can help, please **open an issue on GitHub** with your setup, what you tested, and your results. Your findings can help us document a straightforward procedure for other Windows users.
 
 ---
 
