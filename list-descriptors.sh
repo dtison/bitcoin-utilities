@@ -14,16 +14,16 @@ CheckArguments $1
 
 # Set default values
 DEBUG=0
-CONF=""
+RPC_CONF=""
 USAGE_STRING="[-w] wallet [-p] Bitcoin path [-P] passphrase  [-h] help"
 HandleArguments "$@"
 CheckRPC
 
 ## Check if wallet is loaded, and load if not
-if ! ${BITCOIN_PATH}/bitcoin-cli ${CONF} listwallets\
+if ! ${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} listwallets\
 	 | jq -e --arg wallet "$WALLET" 'index($wallet) != null' >/dev/null
 then    
-	if ! ${BITCOIN_PATH}/bitcoin-cli ${CONF} loadwallet "$WALLET" >&2
+	if ! ${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} loadwallet "$WALLET" >&2
 	then
 		echo "Error loading wallet ${WALLET}" >&2
 		exit 1
@@ -31,10 +31,10 @@ then
 fi
 
 # Send wallet passphrase 
-${BITCOIN_PATH}/bitcoin-cli ${CONF} -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120
+${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120
 
 # Display descriptors
-printf "%s\n" "$(${BITCOIN_PATH}/bitcoin-cli ${CONF} -rpcwallet=${WALLET} listdescriptors true | jq -r '.descriptors') "
+printf "%s\n" "$(${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -rpcwallet=${WALLET} listdescriptors true | jq -r '.descriptors') "
 
 
 

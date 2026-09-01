@@ -20,6 +20,7 @@ WALLET=""
 REQUEST=""
 BLOCK_HEIGHT=""
 DEBUG=0
+RPC_CONF=""
 USAGE_STRING="[-w] wallet [-f] filename [-p] Bitcoin path [-P] passphrase [-t] block height [-h] help"
 
 HandleArguments "$@"
@@ -38,8 +39,8 @@ then
 else
 #    BLOCK_HEIGHT=$2
     # Set up timestamp based on BLOCK_HEIGHT
-    HASH=$(${BITCOIN_PATH}/bitcoin-cli getblockhash ${BLOCK_HEIGHT})
-    TIMESTAMP=$(${BITCOIN_PATH}/bitcoin-cli getblockheader ${HASH} true | jq -r .time)
+    HASH=$(${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF}  getblockhash ${BLOCK_HEIGHT})
+    TIMESTAMP=$(${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} getblockheader ${HASH} true | jq -r .time)
 fi	
 
 CheckImportParameters $WALLET $FILENAME $PASSPHRASE 
@@ -52,7 +53,7 @@ fi
 echo "Creating new wallet $WALLET, HEIGHT: ${BLOCK_HEIGHT} TIMESTAMP: ${TIMESTAMP}"
 
 # Create a new wallet
-if ! ${BITCOIN_PATH}/bitcoin-cli -named createwallet \
+if ! ${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -named createwallet \
   wallet_name="${WALLET}" \
   disable_private_keys=false \
   blank=false \
@@ -67,10 +68,8 @@ then
 	exit 1
 fi
 
-
 # Send the wallet passphrase 
-${BITCOIN_PATH}/bitcoin-cli -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120
-
+${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120
 
 # Check if the file contains a JSON array
 if grep -qE '^\s*\[\s*([^{[]|[^}])*$' "$FILENAME" 2>/dev/null; then
@@ -90,7 +89,8 @@ else
 		fi
 
 		# Get checksum
-        checksum=$(echo $(${BITCOIN_PATH}/bitcoin-cli -rpcwallet=${WALLET} getdescriptorinfo  "combo(${line})") | jq -r '.checksum')
+        checksum=$(echo $(${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -rpcwallet=${WALLET} getdescriptorinfo \
+			"combo(${line})") | jq -r '.checksum')
 
         if [ -z "$CONTENTS" ]; then
 
@@ -124,10 +124,8 @@ EOF
 
 fi
 
-#echo "$CONTENTS"
-#exit
-
 "${BITCOIN_PATH}/bitcoin-cli" \
+	${RPC_CONF} \
     -rpcwallet="${WALLET}" \
     -rpcclienttimeout=0 \
     importdescriptors "$CONTENTS"
