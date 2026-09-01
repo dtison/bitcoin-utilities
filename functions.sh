@@ -87,6 +87,6 @@ CheckRPC() {
 	# Support rpc via rpc.conf if file exists
 	if [ -f rpc.conf ]
 	then
-    	CONF="-conf=$(pwd)/rpc.conf"
+    	RPC_CONF="-conf=$(pwd)/rpc.conf"
 	fi
 }

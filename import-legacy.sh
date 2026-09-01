@@ -24,6 +24,7 @@ RPC_CONF=""
 USAGE_STRING="[-w] wallet [-f] filename [-p] Bitcoin path [-P] passphrase [-t] block height [-h] help"
 
 HandleArguments "$@"
+CheckRPC
 
 if (( DEBUG ))
 then    
@@ -79,7 +80,7 @@ if grep -qE '^\s*\[\s*([^{[]|[^}])*$' "$FILENAME" 2>/dev/null; then
         CONTENTS=$(cat "$FILENAME")
     fi
 else
-    # Process each line of file 
+    # Process each line of file
     while IFS= read -r line || [[ -n "$line" ]]; do
 
 		if [ -z "$line" ]
@@ -92,35 +93,15 @@ else
         checksum=$(echo $(${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -rpcwallet=${WALLET} getdescriptorinfo \
 			"combo(${line})") | jq -r '.checksum')
 
-        if [ -z "$CONTENTS" ]; then
-
-            CONTENTS=$(cat <<EOF
-            {
-                "desc": "combo(${line})#${checksum}",
-                "timestamp": ${TIMESTAMP} 
-            }
-EOF
-        )
-        else
+        if [ -n "$CONTENTS" ]
+        then
             CONTENTS+=','
-            CONTENTS+=$(cat <<EOF
-            {
-                "desc": "combo(${line})#${checksum}",
-                "timestamp": ${TIMESTAMP}
-            }
-EOF
-        )
         fi
+        CONTENTS+=$(printf '{"desc":"combo(%s)#%s","timestamp":%s}' "$line" "$checksum" "$TIMESTAMP")
 
     done < "$FILENAME"
 
-    # Add the JSON array brackets
-    CONTENTS=$(cat <<EOF
-    [
-    ${CONTENTS}
-    ]
-EOF
-    )
+    CONTENTS="[${CONTENTS}]"
 
 fi
 
