@@ -18,9 +18,10 @@ USAGE_STRING="[-w] wallet  [-p] Bitcoin path [-P] passphrase  [-h] help"
 HandleArguments "$@"
 
 ## Check if wallet is loaded, and load if not
-if ! ${BITCOIN_PATH}/bitcoin-cli listwallets | jq -e --arg wallet "$WALLET" 'index($wallet) != null' >/dev/null
+if ! ${BITCOIN_PATH}/bitcoin-cli -conf=$(pwd)/client.conf listwallets\
+	 | jq -e --arg wallet "$WALLET" 'index($wallet) != null' >/dev/null
 then    
-	if ! ${BITCOIN_PATH}/bitcoin-cli loadwallet "$WALLET" >&2
+	if ! ${BITCOIN_PATH}/bitcoin-cli -conf=$(pwd)/client.conf loadwallet "$WALLET" >&2
 	then
 		echo "Error loading wallet ${WALLET}" >&2
 		exit 1
@@ -28,10 +29,10 @@ then
 fi
 
 # Send wallet passphrase 
-${BITCOIN_PATH}/bitcoin-cli -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120
+${BITCOIN_PATH}/bitcoin-cli -conf=$(pwd)/client.conf -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120
 
 # Display descriptors
-printf "%s\n" "$(${BITCOIN_PATH}/bitcoin-cli -rpcwallet=${WALLET} listdescriptors true | jq -r '.descriptors') "
+printf "%s\n" "$(${BITCOIN_PATH}/bitcoin-cli -conf=$(pwd)/client.conf -rpcwallet=${WALLET} listdescriptors true | jq -r '.descriptors') "
 
 
 
