@@ -1,3 +1,47 @@
+
+# A Closer Look at What this Utility does
+
+`import-wallet.sh` accepts wallet private keys, exported previously using dumpprivkey. It supports an input file containing WIF private keys, and converts each WIF into a descriptor request suitable for a modern descriptor wallet. It also supports importing a list of Descriptors from listdescriptors true.
+
+For each WIF:
+
+```text
+< WIF >
+```
+
+the script constructs:
+
+```text
+combo(< WIF >)#< checksum >
+```
+
+and submits the resulting JSON array to:
+
+```text
+bitcoin-cli importdescriptors
+```
+
+In other words:
+
+```text
+WIF
+ │
+ │  wrap as combo(...)
+ ▼
+descriptor
+ │
+ │  add Bitcoin Core descriptor checksum
+ ▼
+importdescriptors
+ │
+ ▼
+descriptor wallet
+```
+
+The WIF remains the private key. The descriptor is the wallet's description of how that key can be used to recognize and spend Bitcoin outputs.
+
+Note that the descriptor does not replace private key. It is an update wallet/script representation built around the key.
+
 # Historical Note and Why `combo()` is used
 
 In order to support most WIF's the importer uses:

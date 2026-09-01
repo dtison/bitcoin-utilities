@@ -26,6 +26,33 @@ They are small shell scripts around `bitcoin-cli`, `jq`, and standard Unix / Lin
 
 ---
 
+## Platform Support
+
+`bitcoin-utilities` directly supports **macOS and Linux**. The scripts are written in Bash and use standard Unix utilities together with the Bitcoin Core command-line tools, so no separate runtime or application framework is required.
+
+**Windows users can use WSL 2 (Windows Subsystem for Linux)** to provide a Linux environment in which to run the tools. WSL 2 allows the scripts to be used without requiring the utilities to be rewritten specifically for Windows PowerShell or Command Prompt.
+
+The Bitcoin Core installation and `bitcoin-cli` executable must, of course, be available within the environment where the scripts are being run. See the installation and configuration instructions below for platform-specific details.
+
+---
+### Windows / WSL 2 Testing
+
+**macOS and Linux are covered. Windows testing is still needed.**
+
+If you are an experienced Windows and/or WSL 2 user and can help test `bitcoin-utilities` with Bitcoin Core running on Windows, we'd appreciate your help. In particular, we need to verify the simplest and most secure way for the WSL 2 environment to communicate with Bitcoin Core's RPC interface.
+
+If you can help, please **open an issue on GitHub** with your setup, what you tested, and your results. Your findings can help us document a straightforward procedure for other Windows users.
+
+### Windows / WSL 2 Testing
+
+**MacOS and Linux are covered. Windows testing is still needed.**
+
+If you are an experienced Windows and/or WSL 2 user and can help test `bitcoin-utilities` with Bitcoin Core running on Windows, we'd appreciate your help. In particular, we need to verify the simplest and most secure way for the WSL 2 environment to communicate with Bitcoin Core's RPC interface.
+
+If you can help, please **open an issue on GitHub** with your setup, what you tested, and your results. Your findings can help us document a straightforward procedure for other Windows users.
+
+---
+
 ## The Problem
 
 For many years, a Bitcoin Core user could do something conceptually simple:
@@ -65,48 +92,82 @@ The modern replacement is `importdescriptors` which is incompatible with legacy 
 
 ---
 
-# What this utility does
 
-`import-wallet.sh` accepts wallet private keys, exported previously using dumpprivkey. It supports an input file containing WIF private keys, and converts each WIF into a descriptor request suitable for a modern descriptor wallet. It also supports importing a list of Descriptors from listdescriptors true.
+# Security
 
-For each WIF:
+This software handles **private keys**.
 
-```text
-< WIF >
-```
+One wrong move and you could lose all your Bitcoin.
 
-the script constructs:
+**Think twice before you act.**
 
-```text
-combo(< WIF >)#< checksum >
-```
+Consider using an encrypted device or volume.
 
-and submits the resulting JSON array to:
+Do not use where any cameras are present.
 
-```text
-bitcoin-cli importdescriptors
-```
+Do not use where others can see your display.
 
-In other words:
+## Do not
 
-```text
-WIF
- │
- │  wrap as combo(...)
- ▼
-descriptor
- │
- │  add Bitcoin Core descriptor checksum
- ▼
-importdescriptors
- │
- ▼
-descriptor wallet
-```
+- Put WIF files into Git.
+- Commit `.bitcoin-utilities.sh`.
+- Paste WIFs into web sites.
+- Upload WIFs to any Storage or Cloud services.
+- Send descriptor exports containing private keys to other people.
+- Leave WIFs or private descriptors in shell history unnecessarily.
+- Run the scripts on a machine you do not trust.
 
-The WIF remains the private key. The descriptor is the wallet's description of how that key can be used to recognize and spend Bitcoin outputs.
+## Remember
 
-Note that the descriptor does not replace private key. It is an update wallet/script representation built around the key.
+A WIF is private-key material.
+
+A descriptor containing the private key is also private-key material.
+
+Handle with care the Passphrase you send on the command line or in .bitcoin-utilities.sh
+
+The checksum and public-only descriptors are safe. .
+
+### Verify Bitcoin Core Before Use
+
+Before using this tool, **verify the Bitcoin Core binaries you are going to run**. At an absolute minimum, verify the SHA-256 checksum of your downloaded Bitcoin Core release against the official `SHA256SUMS` file published by the Bitcoin Core project. For stronger verification, use GPG to verify the signatures on `SHA256SUMS.asc` and verify the signing keys and fingerprints you trust. Bitcoin Core provides platform-specific instructions for both methods on its official [Download and Verification](https://bitcoincore.org/en/download/) page.
+
+Do not assume that a Bitcoin Core binary is trustworthy merely because it was downloaded from a site that appears legitimate. **Verify it before using it with private keys.** If the verification fails, stop and do not use the software.
+
+### Start With Small Amounts
+
+When first using `bitcoin-utilities`, **always begin with a small amount of Bitcoin**. Use a test wallet and keys containing only an amount you can afford to lose. Work through the complete import, verification, backup, and recovery process until you are completely familiar and confident with the tool and its behavior.
+
+Only after you have independently verified that the process works as expected should you consider using the tool with significant amounts of Bitcoin.
+
+**Never make your first attempt with your life savings.**
+
+### Shell Command History
+
+**Be aware that anything you enter on the command line may be recorded in your shell's command history.** Depending on your shell, this may be stored in `~/.bash_history` (Bash) or `~/.zsh_history` (Zsh). If you supply a WIF, wallet passphrase, or other sensitive value directly as a command-line parameter, that value may therefore remain in your shell history after the command has completed.
+
+There are several ways to prevent sensitive commands from being recorded in shell history, and commands can also be removed from history after the fact. However, history behavior varies by shell and configuration, so **do not assume that a command containing private-key material or a passphrase will automatically disappear from history**. Understand how history works in your particular environment before using sensitive command-line arguments.
+
+See the official documentation for your shell:
+
+- [GNU Bash — Using History Interactively](https://www.gnu.org/software/bash/manual/html_node/Using-History-Interactively.html) — including `HISTCONTROL`, `HISTIGNORE`, `HISTFILE`, and related history controls.
+- [Zsh — User's Guide / History](https://zsh.sourceforge.io/Guide/zshguide.html) — including `HIST_IGNORE_SPACE` and other history controls.
+
+**Treat your shell history as sensitive data when working with Bitcoin private keys.** Before using this tool, understand exactly what your shell records, where it stores that history, and how to remove sensitive entries if necessary.
+
+
+---
+
+### What This Tool Actually Does
+
+`bitcoin-utilities` is intentionally a **thin automation layer over the Bitcoin Core RPC interface**. It does not implement a Bitcoin wallet, replace Bitcoin Core, or provide an alternative Bitcoin implementation.
+
+The operations performed by these scripts are carried out through the Bitcoin Core RPC interface using `bitcoin-cli`. The scripts primarily automate and sequence operations that an experienced user could perform manually—for example, obtaining descriptor information, constructing the appropriate `importdescriptors` requests, importing them into a descriptor wallet, and exporting reusable descriptors.
+
+In other words, **Bitcoin Core does the actual wallet work**. These scripts provide a convenient, repeatable way to perform the necessary RPC operations without requiring the user to construct and execute each command manually.
+
+**The scripts do not send private keys to an external service or rely on a third-party Bitcoin API.** Their purpose is to make the transition from WIF-based key backups to modern descriptor wallets practical while keeping the underlying operations within the user's own Bitcoin Core installation.
+
+
 
 ---
 
@@ -350,44 +411,6 @@ The part needed by `importdescriptors` is:
 ```
 
 That distinction is important when moving a descriptor backup between wallets or scripts.
-
----
-
-
-# Security considerations
-
-This software handles **private keys**.
-
-One wrong move and you could lose all your Bitcoin.
-
-**Think twice before you act.**
-
-Consider using an encrypted device or volume.
-
-Do not use where any cameras are present.
-
-Do not use where others can see your display.
-
-## Do not
-
-- Put WIF files into Git.
-- Commit `.bitcoin-utilities.sh`.
-- Paste WIFs into web sites.
-- Upload WIFs to any Storage or Cloud services.
-- Send descriptor exports containing private keys to other people.
-- Leave WIFs or private descriptors in shell history unnecessarily.
-- Run the scripts on a machine you do not trust.
-
-## Remember
-
-A WIF is private-key material.
-
-A descriptor containing the private key is also private-key material.
-
-A checksum is safe; is not private.
-
-A public-only descriptor is not private-key material.
-
 
 ---
 
