@@ -1,28 +1,35 @@
 # Bitcoin Utilities — Private Key Import for Descriptor Wallets - Descriptors Exports
 
+Have an old WIF private-key backups but no importprivkey in modern Bitcoin Core?
+
+bitcoin-utilities provides a bridge from WIF-based backups to modern descriptor wallets, allowing individual private keys to be imported using Bitcoin Core's importdescriptors RPC.
+
+The terms Private Key and WIF are synonyms and used interchangeably.
+
 ## ⚠️ Warning
 
-Every effort has been made to ensure that this tool is safe to use. Nevertheless, using software that handles Bitcoin private keys inherently involves risk.
+Every effort has been made to ensure that this tool is safe to use. Nevertheless, using any software that handles Bitcoin private keys inherently involves risk.
 
-**Read and thoroughly review the Security section before using this tool, and do not proceed unless you are 100% confident that you understand what you are doing.** This tool is not intended for casual or careless use. You are solely responsible for your actions and for the security of your Bitcoin. **There is no warranty.** Please read `doc/LICENSE.md` in its entirety.
+**Read and thoroughly review the Security section before using, and do not proceed unless you are 100% confident that you understand what you are doing.** This tool is not intended for casual or careless users. You are solely responsible for your actions and for the security of your Bitcoin. **There is no warranty.** Please read `doc/LICENSE.md` in its entirety.
 
 A single careless mistake can result in the permanent loss of your Bitcoin. **Review the source code thoroughly and verify your environment before using this software.**
 
-This README is a summary. 
+---
+## Additional Info
 
 If you want additional technical details, see [See How it Works](doc/HOW_WORKS.md).
 For a deeper-dive into the problem being solved, see [Import Gap Details](doc/IMPORT_GAP_DETAILS.md).
 
 
-This repository contains small Bash utilities for **Bitcoin Core descriptor wallets**, with emphasis on one important use case:
+This repository contains small Bash utilities for **Bitcoin Core descriptor wallets**, with one principal use case:
 
 > **You have one or more private keys in WIF format from an old `dumpprivkey` backup, but the current version of Bitcoin Core no longer provides `importprivkey`.**
 >
-> There is no officially-supported workaround. The latest versions of Bitcoin Core can open Legacy wallet.dat files, but they are unable to restore a wallet from the Bitcoin Private Key.
+> There is no officially-supported workaround. The latest version of Bitcoin Core can not open Legacy wallet.dat files, and it is also unable to restore a wallet from the Bitcoin Private Key.
 
-The utilities provide a practical bridge between the old **"one WIF = one saved private key"** workflow and the modern **descriptor-wallet** model.
+The utilities provide a practical bridge between the old **"one WIF = one saved private key"** workflow and the modern **descriptor-wallet**.
 
-They are small shell scripts around `bitcoin-cli`, `jq`, and standard Unix / Linux tools. For security, they do not introduce a Bitcoin library or any external service into the key-handling path. All the commands issued by the scripts could also in theory be run manually on the CLI.
+They are small shell scripts around `bitcoin-cli`, `jq`, using standard Unix / Linux tools. For security, they do not introduce any Bitcoin library and do not make any network connections except to the official Bitcoin Core PRC that you have running locally.
 
 ---
 
@@ -43,10 +50,9 @@ If you are an experienced MacOS or Windows user and can help test `bitcoin-utili
 
 If you can help, please **open an issue on GitHub** with your setup, what you tested, and your results. Your findings can help us document straightforward procedures for Mac and Windows users.
 
-
 ---
 
-## The Problem
+## Review of The Problem
 
 For many years, a Bitcoin Core user could do something conceptually simple:
 
@@ -54,17 +60,17 @@ For many years, a Bitcoin Core user could do something conceptually simple:
 dumpprivkey <address>
 ```
 
-and save the resulting WIF somewhere safe.
+and save the resulting Private Key (WIF) somewhere safe.
 
-Years later, that same person could create a wallet and do:
+To restore the funds, the same person expected to be able to create a new wallet and do:
 
 ```text
 importprivkey <WIF>
 ```
 
-That workflow was especially useful for people who kept their own paper/offline backups of individual private keys.
+That traditional workflow was especially useful for paper or other offline backups of individual private keys.
 
-Bitcoin Core's wallet architecture has since moved to **descriptor wallets**. In Bitcoin Core 30.0, the legacy wallet implementation was removed, along with the legacy-only RPCs including:
+Bitcoin Core's wallet architecture has since moved to **descriptor wallets**. In Bitcoin Core 30.0, **the legacy wallet implementation was removed**, along with the associated legacy RPCs:
 
 - `dumpprivkey`
 - `dumpwallet`
@@ -77,14 +83,13 @@ Bitcoin Core's wallet architecture has since moved to **descriptor wallets**. In
 
 See the [Bitcoin Core 30.0 release notes](https://bitcoincore.org/en/releases/30.0/).
 
-But, there is an important distinction:
+But, there is an important stipulation:
 
-**The private key itself has not become obsolete, but the RPC and Console interface for importing a WIF into a wallet did.**
+**The private key itself has not become unusable, but the RPC and Console interface for importing it into a Descriptor wallet did.**
 
-The modern replacement is `importdescriptors` which is incompatible with legacy Private Keys.
+The modern workflow is to use `importdescriptors` which is incompatible with legacy Private Keys.
 
 ---
-
 
 # Security
 
@@ -102,13 +107,11 @@ Do not use where others can see your display.
 
 ## Do not
 
-- Put WIF files into Git.
-- Commit `.bitcoin-utilities.sh`.
-- Paste WIFs into web sites.
-- Upload WIFs to any Storage or Cloud services.
-- Send descriptor exports containing private keys to other people.
-- Leave WIFs or private descriptors in shell history unnecessarily.
-- Run the scripts on a machine you do not trust.
+- Paste Private Keys into any web sites.
+- Upload Private Keys to any Storage or Cloud services, or send via email.
+- Descriptor wallet exports are the same risk, if made using listdescriptors true.
+- Leave Private Keys or your Passphrase in your shell history.
+- Run the scripts on a machine you do not trust, or with unverified software (See note below, **Verify Bitcoin Core Before Use** )
 
 ## Remember
 
@@ -118,7 +121,7 @@ A descriptor containing the private key is also private-key material.
 
 Handle with care the Passphrase you send on the command line or in .bitcoin-utilities.sh
 
-The checksum and public-only descriptors are safe. .
+The checksum and public-only descriptors are safe.
 
 ### Verify Bitcoin Core Before Use
 
