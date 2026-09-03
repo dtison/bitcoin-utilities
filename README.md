@@ -8,9 +8,9 @@ The terms Private Key and WIF are synonyms and used interchangeably.
 
 ## ⚠️ Warning
 
-Every effort has been made to ensure that this tool is safe to use. Nevertheless, using any software that handles Bitcoin private keys inherently involves risk.
+This software automates importing a Bitcoin Private Key (WIF) into a new Descriptor wallet. It fills the gap where the now-deprecated **importprivkey** used to work. This software emulates that behavior by means of fully supported RPC calls. Alternatively, the steps performed by this software could also be done manually if you prefer. 
 
-**Read and thoroughly review the Security section before using, and do not proceed unless you are 100% confident that you understand what you are doing.** This tool is not intended for casual or careless users. You are solely responsible for your actions and for the security of your Bitcoin. **There is no warranty.** Please read `doc/LICENSE.md` in its entirety.
+Using any software to work with Private Keys inherently involves risk. **Read and thoroughly review the Security section before using, and do not proceed unless you are 100% confident that you understand what you are doing.** This tool is not intended for casual or careless users. You are solely responsible for your actions and for the security of your Bitcoin. **There is no warranty.** Please read `doc/LICENSE.md` in its entirety.
 
 A single careless mistake can result in the permanent loss of your Bitcoin. **Review the source code thoroughly and verify your environment before using this software.**
 
