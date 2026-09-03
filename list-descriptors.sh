@@ -3,13 +3,11 @@
 source functions.sh
 
 CONFIG_FILE=".bitcoin-utilities.sh"
-if [ ! -e "${CONFIG_FILE}" ]
+if [ -e "${CONFIG_FILE}" ]
 then
-    DisplayConfigRequired
-    exit
+    source "${CONFIG_FILE}"
 fi
 
-source "${CONFIG_FILE}"
 CheckArguments $1
 
 # Set default values
