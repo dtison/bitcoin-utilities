@@ -8,14 +8,14 @@ then
     source "${CONFIG_FILE}"
 fi
 
-CheckArguments $1
-
 # Set default values
 DEBUG=0
 RPC_CONF=""
 USAGE_STRING="[-w] wallet [-p] Bitcoin path [-P] passphrase  [-h] help"
 HandleArguments "$@"
 CheckRPC
+
+CheckListDescriptorParameters $WALLET $PASSPHRASE
 
 ## Check if wallet is loaded, and load if not
 if ! ${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} listwallets\

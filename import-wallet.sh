@@ -8,8 +8,6 @@ then
 	source "${CONFIG_FILE}"
 fi
 
-CheckArguments $1
-
 # Set default values
 FILENAME="keys.txt"
 CONTENTS=""
@@ -28,6 +26,7 @@ then
 	echo "Debug is enabled."
 fi
 
+CheckImportParameters "$WALLET" "$PASSPHRASE"
 
 # Setup timestamp from BLOCK_HEIGHT
 if [ -z $BLOCK_HEIGHT ]
@@ -40,8 +39,6 @@ else
     HASH=$(${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF}  getblockhash ${BLOCK_HEIGHT})
     TIMESTAMP=$(${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} getblockheader ${HASH} true | jq -r .time)
 fi	
-
-CheckImportParameters $WALLET $FILENAME $PASSPHRASE 
 
 if (( DEBUG ))
 then    

@@ -1,22 +1,5 @@
-CheckArguments() {
-	if [ $# -eq 0 ]
-	then
-		Usage;
-	fi
-}
-
-DisplayConfigRequired() {
-    echo
-    echo "Create a file named .bitcoin-utilities.sh with contents:"
-    echo
-    echo "BITCOIN_PATH='path/to/bitcoin-executables'"
-    echo "PASSPHRASE='<wallet-passphrase>'"
-    echo
-}
-
 Usage() {
 	echo
-	#echo "Usage: $0 [-w] wallet [-f] filename [-p] Bitcoin path [-P] passphrase [-t] block height [-h] help " 
 	echo "Usage: $0 ${USAGE_STRING} " 
 	echo
 	exit 1
@@ -51,26 +34,39 @@ HandleArguments() {
 }
 
 CheckImportParameters() {
-
 	WALLET=$1
-	FILENAME=$2
-	PASSPHRASE=$3
+	PASSPHRASE=$2
+	HELP_STRING="Use $0 -h for help"
 
-	if [ -z $WALLET ]
+	if [ -z "$WALLET" ]
 	then
-		echo " Error: Wallet name is required for import. Use -w <wallet>"
+		printf "\n%s\n%s\n\n" "Error: Wallet name is required for import." "${HELP_STRING}" 
 		exit 1
 	fi 
-	if [ -z $FILENAME ]
+
+	if [ -z "$PASSPHRASE" ]
 	then
-		echo " Error: File name is required for import."
+		printf "\n%s\n%s\n\n" "Error: Passphrase is required for import." "${HELP_STRING}" 
 		exit 1
 	fi 
-	if [ -z $PASSPHRASE ]
+}
+
+CheckListDescriptorParameters() {
+	WALLET=$1
+	PASSPHRASE=$2
+	HELP_STRING="Use $0 -h for help"
+
+	if [ -z "$WALLET" ]
 	then
-		echo " Error: Passphrase is required for import."
+		printf "\n%s\n%s\n\n" "Error: Wallet name is required for export." "${HELP_STRING}" 
 		exit 1
 	fi 
+
+    if [ -z "$PASSPHRASE" ]
+    then
+        printf "\n%s\n%s\n\n" "Error: Passphrase is required for export." "${HELP_STRING}"
+        exit 1
+    fi
 }
 
 DisplayValues() {
