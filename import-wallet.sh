@@ -58,8 +58,6 @@ COMMAND="${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -named createwallet \
   load_on_startup=true \
   external_signer=false"
 
-#printf "\n*** [%s]\n" "$COMMAND"
-
 if (( DRY_RUN ))
 then
 	printf "\n%s\n" "$COMMAND"
@@ -74,6 +72,7 @@ else
 	fi
 fi
 
+# Send the wallet passphrase 
 COMMAND="${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120"
 if (( DRY_RUN ))
 then
@@ -81,9 +80,6 @@ then
 else
     source /dev/stdin <<< "$COMMAND"
 fi
-exit
-# Send the wallet passphrase 
-${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120
 
 # Check if the file contains a JSON array
 if grep -qE '^\s*\[\s*([^{[]|[^}])*$' "$FILENAME" 2>/dev/null; then
@@ -118,10 +114,12 @@ else
 
 fi
 
-"${BITCOIN_PATH}/bitcoin-cli" \
-	${RPC_CONF} \
-    -rpcwallet="${WALLET}" \
-    -rpcclienttimeout=0 \
-    importdescriptors "$CONTENTS"
+COMMAND=$(printf "%s/bitcoin-cli %s -rpcwallet=%s -rpcclienttimeout=0 importdescriptors '%s'\n" "$BITCOIN_PATH" "${RPC_CONF}" "$WALLET" "$CONTENTS")
+if (( DRY_RUN ))
+then
+    printf "\n%s\n" "$COMMAND"
+else
+    source /dev/stdin <<< "$COMMAND"
+fi
 
 

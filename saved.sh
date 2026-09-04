@@ -13,3 +13,12 @@ then
     exit 1
 fi
 
+
+
+
+"${BITCOIN_PATH}/bitcoin-cli" \
+    ${RPC_CONF} \
+    -rpcwallet="${WALLET}" \
+    -rpcclienttimeout=0 \
+    importdescriptors "$CONTENTS"
+
