@@ -48,7 +48,7 @@ fi
 echo "Creating new wallet $WALLET, HEIGHT: ${BLOCK_HEIGHT} TIMESTAMP: ${TIMESTAMP}"
 
 # Create a new wallet
- COMMAND="${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -named createwallet \
+COMMAND="${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -named createwallet \
   wallet_name="${WALLET}" \
   disable_private_keys=false \
   blank=false \
@@ -58,9 +58,7 @@ echo "Creating new wallet $WALLET, HEIGHT: ${BLOCK_HEIGHT} TIMESTAMP: ${TIMESTAM
   load_on_startup=true \
   external_signer=false"
 
-
-#COMMAND="ls -la /"
-printf "\n*** [%s]\n" "$COMMAND"
+#printf "\n*** [%s]\n" "$COMMAND"
 
 if (( DRY_RUN ))
 then
@@ -76,23 +74,14 @@ else
 	fi
 fi
 
-exit
-
-if ! ${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -named createwallet \
-  wallet_name="${WALLET}" \
-  disable_private_keys=false \
-  blank=false \
-  passphrase="${PASSPHRASE}" \
-  avoid_reuse=false \
-  descriptors=true \
-  load_on_startup=true \
-  external_signer=false
+COMMAND="${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120"
+if (( DRY_RUN ))
 then
-	echo 
-	echo "Unable to create wallet ${WALLET}. Import unsuccessful." >&2
-	exit 1
+    printf "\n%s\n" "$COMMAND"
+else
+    source /dev/stdin <<< "$COMMAND"
 fi
-
+exit
 # Send the wallet passphrase 
 ${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -rpcwallet=${WALLET} walletpassphrase ${PASSPHRASE} 120
 
