@@ -17,7 +17,7 @@ BLOCK_HEIGHT=""
 DEBUG=0
 DRY_RUN=0
 RPC_CONF=""
-USAGE_STRING="[-w] wallet [-f] filename [-p] Bitcoin path [-P] passphrase [-t] block height [-h] help"
+USAGE_STRING="[-w] wallet [-f] filename [-p] Bitcoin path [-P] passphrase [-t] block height -n dry run [-h] help"
 
 HandleArguments "$@"
 CheckRPC
