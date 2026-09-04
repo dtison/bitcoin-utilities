@@ -15,6 +15,7 @@ WALLET=""
 REQUEST=""
 BLOCK_HEIGHT=""
 DEBUG=0
+DRY_RUN=0
 RPC_CONF=""
 USAGE_STRING="[-w] wallet [-f] filename [-p] Bitcoin path [-P] passphrase [-t] block height [-h] help"
 
@@ -34,7 +35,6 @@ then
     BLOCK_HEIGHT=0
     TIMESTAMP=0
 else
-#    BLOCK_HEIGHT=$2
     # Set up timestamp based on BLOCK_HEIGHT
     HASH=$(${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF}  getblockhash ${BLOCK_HEIGHT})
     TIMESTAMP=$(${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} getblockheader ${HASH} true | jq -r .time)
@@ -48,6 +48,36 @@ fi
 echo "Creating new wallet $WALLET, HEIGHT: ${BLOCK_HEIGHT} TIMESTAMP: ${TIMESTAMP}"
 
 # Create a new wallet
+ COMMAND="${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -named createwallet \
+  wallet_name="${WALLET}" \
+  disable_private_keys=false \
+  blank=false \
+  passphrase="${PASSPHRASE}" \
+  avoid_reuse=false \
+  descriptors=true \
+  load_on_startup=true \
+  external_signer=false"
+
+
+#COMMAND="ls -la /"
+printf "\n*** [%s]\n" "$COMMAND"
+
+if (( DRY_RUN ))
+then
+	printf "\n%s\n" "$COMMAND"
+else
+	source /dev/stdin <<< "$COMMAND" 
+	rc=$?
+	if (( rc ))
+	then
+		echo 
+		echo "Unable to create wallet ${WALLET}. Import unsuccessful." >&2
+		exit 1
+	fi
+fi
+
+exit
+
 if ! ${BITCOIN_PATH}/bitcoin-cli ${RPC_CONF} -named createwallet \
   wallet_name="${WALLET}" \
   disable_private_keys=false \

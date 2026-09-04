@@ -8,7 +8,7 @@ Usage() {
 HandleArguments() {
     local OPTIND OPTARG OPTION
 
-    while getopts 'w:f:p:P:t:hd' OPTION; do
+    while getopts 'w:f:p:P:t:hdn' OPTION; do
         case "$OPTION" in
             w) WALLET=$OPTARG ;;
             f) FILENAME=$OPTARG ;;
@@ -16,6 +16,7 @@ HandleArguments() {
             p) BITCOIN_PATH=$OPTARG ;;
             t) BLOCK_HEIGHT=$OPTARG ;;
 			d) DEBUG=1 ;;
+            n) DRY_RUN=1 ;;
             h) Usage  ;;
             \?)
                 echo "Invalid option: -$OPTARG" >&2
