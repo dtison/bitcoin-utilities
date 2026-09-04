@@ -8,7 +8,7 @@ The terms Private Key and WIF are synonyms and used interchangeably.
 
 ## ⚠️ Warning
 
-This software automates importing a Bitcoin Private Key (WIF) into a new Descriptor wallet. It fills the gap where the now-deprecated **importprivkey** used to work. This software emulates that behavior by means of fully supported RPC calls. Alternatively, the steps performed by this software could also be done manually if you prefer. 
+This software automates importing a Bitcoin Private Key (WIF) into a new Descriptor wallet. It fills the gap where the now-deprecated **importprivkey** used to work. This software emulates that behavior by means of fully supported RPC calls. Alternatively, the steps performed by this software could also be done manually if you prefer. Use `-n` with `import-wallet.sh` to print the `bitcoin-cli` commands without running them. 
 
 Using any software to work with Private Keys inherently involves risk. **Read and thoroughly review the Security section before using, and do not proceed unless you are 100% confident that you understand what you are doing.** This tool is not intended for casual or careless users. You are solely responsible for your actions and for the security of your Bitcoin. **There is no warranty.** Please read `doc/LICENSE.md` in its entirety.
 
@@ -272,6 +272,7 @@ The main options are:
 -p path         Bitcoin Core executable path
 -P passphrase   Wallet passphrase
 -t height       Block height used to establish the import timestamp
+-n              Print the bitcoin-cli commands that would be run, without contacting Bitcoin Core
 -d              Debug output
 -h              Help
 ```
@@ -290,6 +291,16 @@ The wallet is created if necessary.
 If the wallet already exists, the script attempts to import into that wallet.
 
 If the -f keys.txt parameter is omitted, it will default to "keys.txt".
+
+To print the `bitcoin-cli` commands that would perform the import, without creating a wallet or contacting Bitcoin Core:
+
+```bash
+./import-wallet.sh -w new-wallet -n
+```
+
+`-P` is not required for `-n` if `PASSPHRASE` is already set in `.bitcoin-utilities.sh`. If neither is set, the printed commands use `"$PASSPHRASE"` so you can supply it when you run them.
+
+The output is a sequence of commands you can inspect or enter manually. Descriptor checksums are shown as `getdescriptorinfo` assignments so you can complete `importdescriptors` without this script calling Bitcoin Core. Treat the output as sensitive: it includes private keys and the wallet passphrase.
 
 ---
 
@@ -424,7 +435,7 @@ The repository's `.gitignore` excludes this file.
 
 For a higher-security environment, consider changing the scripts so the passphrase is supplied interactively or through an appropriate secret-management mechanism rather than stored in a plaintext configuration file.
 
-Also note that the current debug/display code can print the configured passphrase when debugging is enabled. **Do not use `-d` in an environment where command output is being recorded or shared if the passphrase must remain confidential.**
+Also note that the current debug/display code can print the configured passphrase when debugging is enabled, and `-n` prints commands that include the passphrase and private keys. **Do not use `-d` or `-n` in an environment where command output is being recorded or shared if those values must remain confidential.**
 
 ---
 
